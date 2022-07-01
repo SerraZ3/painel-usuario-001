@@ -22,8 +22,11 @@ app.use(express.json());
 // Converte requisição para formato que o json aceita
 app.use(express.urlencoded({ extended: false }));
 
+// localhost:3000/
 app.use("/", indexRoute);
+// localhost:3000/user/
 app.use("/user", userRoute);
+// localhost:3000/category/
 
 app.listen(port, () => {
   console.log("Estamos rodando na porta" + port);

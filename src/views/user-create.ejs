@@ -1,8 +1,11 @@
-<%- include("./partials/head") %>
+<%- include("./partials/head") %> 
 <%- include("./partials/header") %>
 <main id="user-create">
   <h1>Adicionar usuário</h1>
-  <form action="/user" method="post">
+  <% if(locals.error){ %>
+    <h2 class="error-alert"><%= error.message %></h2>
+  <% } %>
+  <form action="/user/create" method="post">
     <input type="text" name="nome" placeholder="Nome" required />
     <input type="text" name="sobrenome" placeholder="Sobrenome" />
     <input type="email" name="email" placeholder="Email" />

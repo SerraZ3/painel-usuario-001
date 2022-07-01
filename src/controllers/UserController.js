@@ -98,6 +98,98 @@ const userController = {
   create: (req, res) => {
     return res.render("user-create", { title: "Cadastrar usuário" });
   },
+  store: (req, res) => {
+    const { nome, sobrenome, idade, email, avatar } = req.body;
+    if (!nome || !sobrenome || !idade || !email || !avatar) {
+      return res.render("user-create", {
+        title: "Cadastrar usuário",
+        error: {
+          message: "Preencha todos os campos!",
+        },
+      });
+    }
+    const newUser = {
+      id: users.length + 1,
+      nome,
+      sobrenome,
+      idade,
+      email,
+      avatar: `https://i.pravatar.cc/300?img=${avatar}`,
+    };
+    users.push(newUser);
+    return res.render("success", {
+      title: "Sucesso!",
+      message: "Usuário criado com sucesso!",
+    });
+  },
+  edit: (req, res) => {
+    const { id } = req.params;
+    const userResult = users.find((user) => user.id === parseInt(id));
+    // const userResult = users.find((user) => user.id.toString() === id);
+    if (!userResult) {
+      return res.render("error", {
+        title: "Ops!",
+        message: "Nenhum usuário encontrado",
+      });
+    }
+    return res.render("user-edit", {
+      title: "Editar usuário",
+      user: userResult,
+    });
+  },
+  update: (req, res) => {
+    const { id } = req.params;
+    const { nome, sobrenome, idade, email, avatar } = req.body;
+    const userResult = users.find((user) => user.id === parseInt(id));
+    // const userResult = users.find((user) => user.id.toString() === id);
+    if (!userResult) {
+      return res.render("error", {
+        title: "Ops!",
+        message: "Nenhum usuário encontrado",
+      });
+    }
+    const updateUser = userResult;
+    if (nome) updateUser.nome = nome;
+    if (sobrenome) updateUser.sobrenome = sobrenome;
+    if (email) updateUser.email = email;
+    if (idade) updateUser.idade = idade;
+    if (avatar) updateUser.avatar = `https://i.pravatar.cc/300?img=${avatar}`;
+    return res.render("success", {
+      title: "Usuário atualizado",
+      message: `Usuário ${updateUser.nome} foi atualizado`,
+    });
+  },
+  delete: (req, res) => {
+    const { id } = req.params;
+    const userResult = users.find((user) => user.id === parseInt(id));
+    // const userResult = users.find((user) => user.id.toString() === id);
+    if (!userResult) {
+      return res.render("error", {
+        title: "Ops!",
+        message: "Nenhum usuário encontrado",
+      });
+    }
+    return res.render("user-delete", {
+      title: "Deletar usuário",
+      user: userResult,
+    });
+  },
+  destroy: (req, res) => {
+    const { id } = req.params;
+    const result = users.findIndex((user) => user.id === parseInt(id));
+    if (result === -1) {
+      return res.render("error", {
+        title: "Ops!",
+        message: "Nenhum usuário encontrado",
+      });
+    }
+    
+    users.splice(result, 1);
+    return res.render("success", {
+      title: "Usuário deletado",
+      message: "Usuário deletado com sucesso!",
+    });
+  },
 };
 
 module.exports = userController;

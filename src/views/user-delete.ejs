@@ -1,0 +1,21 @@
+<%- include("./partials/head") %>
+<%- include("./partials/header") %>
+<main id="user-delete">
+  <h1>Deletar usuário</h1>
+  <% if(locals.user){ %>
+    <div>
+      <img src="<%= user.avatar %>" alt="avatar"/>
+      <span><%= user.nome %> <%= user.sobrenome %></span>
+      <span><%= user.email %></span>
+      <span><%= user.idade %></span>
+    </div>
+    <form action="/user/delete/<%= user.id %>?_method=delete" method="post">
+      <h2 class="error-alert">Deseja deletar esse usuário?</h2>
+      <a href="/user"><button type="button">Não</button></a>
+      <button type="submit">Sim</button>
+    </form>
+  <% } else {%>
+    <h2 class="error-alert">Usuário não encontrado por motivos do além</h2>
+  <% } %>
+</main>
+<%- include("./partials/footer") %>
