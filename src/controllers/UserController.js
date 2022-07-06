@@ -1,3 +1,4 @@
+const files = require("../helpers/files");
 const users = [
   {
     id: 1,
@@ -5,7 +6,7 @@ const users = [
     sobrenome: "Silva",
     email: "robertinho123@email.com",
     idade: 27,
-    avatar: "https://i.pravatar.cc/300?img=70",
+    avatar: "user1.jpeg",
   },
   {
     id: 2,
@@ -13,7 +14,7 @@ const users = [
     sobrenome: "Monteiro",
     email: "aninha123@email.com",
     idade: 22,
-    avatar: "https://i.pravatar.cc/300?img=49",
+    avatar: "user2.jpeg",
   },
   {
     id: 3,
@@ -21,7 +22,7 @@ const users = [
     sobrenome: "Rios",
     email: "ju123@email.com",
     idade: 18,
-    avatar: "https://i.pravatar.cc/300?img=48",
+    avatar: "user3.jpeg",
   },
   {
     id: 4,
@@ -29,7 +30,7 @@ const users = [
     sobrenome: "Oliveira",
     email: "joaozinho123@email.com",
     idade: 45,
-    avatar: "https://i.pravatar.cc/300?img=33",
+    avatar: "user4.jpeg",
   },
   {
     id: 5,
@@ -37,7 +38,7 @@ const users = [
     sobrenome: "Carlos",
     email: "robertinho123@email.com",
     idade: 70,
-    avatar: "https://i.pravatar.cc/300?img=17",
+    avatar: "user5.jpeg",
   },
   {
     id: 6,
@@ -45,7 +46,7 @@ const users = [
     sobrenome: "Santos",
     email: "pedrinho123@email.com",
     idade: 20,
-    avatar: "https://i.pravatar.cc/300?img=18",
+    avatar: "user6.jpeg",
   },
   {
     id: 7,
@@ -53,7 +54,7 @@ const users = [
     sobrenome: "Morais",
     email: "luquinhas123@email.com",
     idade: 30,
-    avatar: "https://i.pravatar.cc/300?img=14",
+    avatar: "user7.jpeg",
   },
   {
     id: 8,
@@ -61,7 +62,7 @@ const users = [
     sobrenome: "Santos",
     email: "helder123@email.com",
     idade: 25,
-    avatar: "https://i.pravatar.cc/300?img=6",
+    avatar: "user8.jpeg",
   },
   {
     id: 9,
@@ -69,7 +70,7 @@ const users = [
     sobrenome: "Souza",
     email: "marquinhos123@email.com",
     idade: 40,
-    avatar: "https://i.pravatar.cc/300?img=3",
+    avatar: "user9.jpeg",
   },
 ];
 
@@ -90,9 +91,13 @@ const userController = {
         message: "Usuário não encontrado",
       });
     }
+    const user = {
+      ...userResult,
+      avatar: files.base64Encode(__dirname + "/../../uploads/" + userResult.avatar),
+    };
     return res.render("user", {
       title: "Visualizar usuário",
-      user: userResult,
+      user,
     });
   },
   create: (req, res) => {
@@ -100,7 +105,7 @@ const userController = {
   },
   store: (req, res) => {
     const { nome, sobrenome, idade, email, avatar } = req.body;
-    if (!nome || !sobrenome || !idade || !email || !avatar) {
+    if (!nome || !sobrenome || !idade || !email ) {
       return res.render("user-create", {
         title: "Cadastrar usuário",
         error: {
@@ -183,7 +188,7 @@ const userController = {
         message: "Nenhum usuário encontrado",
       });
     }
-    
+
     users.splice(result, 1);
     return res.render("success", {
       title: "Usuário deletado",
