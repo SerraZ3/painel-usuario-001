@@ -21,12 +21,40 @@ app.use(methodOverride("_method"));
 app.use(express.json());
 // Converte requisição para formato que o json aceita
 app.use(express.urlencoded({ extended: false }));
+// Middleware global
+app.use((req, res, next) => {
+  console.log("Entrou no middleware global");
+  // console.log(req.url);
+  // if (req.url === "/") {
+  //   next();
+  // } else {
+  //   res.render("error", {
+  //     title: "!Ops",
+  //     message: "Aqui você não entra",
+  //   });
+  // }
+  next();
+});
 
 // localhost:3000/
 app.use("/", indexRoute);
 // localhost:3000/user/
 app.use("/user", userRoute);
-// localhost:3000/category/
+
+// Página não encontrada - 404 not found
+// app.use((req, res, next) => {
+//   res.status(404).render("error", {
+//     title: "Ops!",
+//     message: "Página não encontrada 1",
+//   });
+// });
+// Página não encontrada - 404 not found
+app.get("*", (req, res, next) => {
+  res.status(404).render("error", {
+    title: "Ops!",
+    message: "Página não encontrada 2",
+  });
+});
 
 app.listen(port, () => {
   console.log("Estamos rodando na porta" + port);

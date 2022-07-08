@@ -1,4 +1,6 @@
+const fs = require("fs");
 const files = require("../helpers/files");
+const upload = require("../config/upload")
 const users = [
   {
     id: 1,
@@ -93,7 +95,9 @@ const userController = {
     }
     const user = {
       ...userResult,
-      avatar: files.base64Encode(__dirname + "/../../uploads/" + userResult.avatar),
+      avatar: files.base64Encode(
+        upload.path + userResult.avatar
+      ),
     };
     return res.render("user", {
       title: "Visualizar usuário",
@@ -104,14 +108,10 @@ const userController = {
     return res.render("user-create", { title: "Cadastrar usuário" });
   },
   store: (req, res) => {
-    const { nome, sobrenome, idade, email, avatar } = req.body;
-    if (!nome || !sobrenome || !idade || !email ) {
-      return res.render("user-create", {
-        title: "Cadastrar usuário",
-        error: {
-          message: "Preencha todos os campos!",
-        },
-      });
+    const { nome, sobrenome, idade, email } = req.body;
+    let filename = "user-default.jpeg";
+    if (req.file) {
+      filename = req.file.filename;
     }
     const newUser = {
       id: users.length + 1,
@@ -119,7 +119,7 @@ const userController = {
       sobrenome,
       idade,
       email,
-      avatar: `https://i.pravatar.cc/300?img=${avatar}`,
+      avatar: filename,
     };
     users.push(newUser);
     return res.render("success", {
@@ -144,9 +144,13 @@ const userController = {
   },
   update: (req, res) => {
     const { id } = req.params;
-    const { nome, sobrenome, idade, email, avatar } = req.body;
+    const { nome, sobrenome, idade, email } = req.body;
     const userResult = users.find((user) => user.id === parseInt(id));
     // const userResult = users.find((user) => user.id.toString() === id);
+    let filename;
+    if (req.file) {
+      filename = req.file.filename;
+    }
     if (!userResult) {
       return res.render("error", {
         title: "Ops!",
@@ -158,7 +162,11 @@ const userController = {
     if (sobrenome) updateUser.sobrenome = sobrenome;
     if (email) updateUser.email = email;
     if (idade) updateUser.idade = idade;
-    if (avatar) updateUser.avatar = `https://i.pravatar.cc/300?img=${avatar}`;
+    if (filename) {
+      let avatarTmp = updateUser.avatar;
+      fs.unlinkSync(upload.path + avatarTmp);
+      updateUser.avatar = filename;
+    }
     return res.render("success", {
       title: "Usuário atualizado",
       message: `Usuário ${updateUser.nome} foi atualizado`,
@@ -174,9 +182,15 @@ const userController = {
         message: "Nenhum usuário encontrado",
       });
     }
+    const user = {
+      ...userResult,
+      avatar: files.base64Encode(
+        upload.path + userResult.avatar
+      ),
+    };
     return res.render("user-delete", {
       title: "Deletar usuário",
-      user: userResult,
+      user,
     });
   },
   destroy: (req, res) => {
@@ -188,7 +202,7 @@ const userController = {
         message: "Nenhum usuário encontrado",
       });
     }
-
+    fs.unlinkSync(upload.path + users[result].avatar);
     users.splice(result, 1);
     return res.render("success", {
       title: "Usuário deletado",
